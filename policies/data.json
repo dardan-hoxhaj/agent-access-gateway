@@ -1,0 +1,10 @@
+{
+  "agents": {
+    "ticket-agent": {
+      "tickets": { "read": true, "write": true }
+    },
+    "billing-agent": {
+      "billing": { "read": true }
+    }
+  }
+}
