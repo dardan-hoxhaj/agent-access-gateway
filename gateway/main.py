@@ -20,10 +20,13 @@ KEYCLOAK_URL = os.environ.get("KEYCLOAK_URL", "http://localhost:8080")
 REALM = os.environ.get("REALM", "agent-gateway")
 AUDIENCE = os.environ.get("AUDIENCE", "agent-gateway")
 OPA_URL = os.environ.get("OPA_URL", "http://localhost:8181")
+# JWKS is fetched from KEYCLOAK_URL (internal in Compose). The token issuer
+# is the URL the client used (localhost in the local demo). They can differ.
+ISSUER = os.environ.get("ISSUER", f"{KEYCLOAK_URL}/realms/{REALM}")
 
 jwks = JWKSClient(
     jwks_url=f"{KEYCLOAK_URL}/realms/{REALM}/protocol/openid-connect/certs",
-    issuer=f"{KEYCLOAK_URL}/realms/{REALM}",
+    issuer=ISSUER,
     audience=AUDIENCE,
 )
 opa = OPAClient(OPA_URL)
