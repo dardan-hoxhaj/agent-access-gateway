@@ -99,7 +99,9 @@ def test_wrong_audience(client):
 
 
 def test_bad_algorithm(client):
-    token = _token(_base_claims(), alg="HS256")
+    # python-jose 3.5 refuses to sign HS256 with an RSA key (CVE-2024-33663).
+    # Sign with a symmetric secret instead, then confirm the gateway rejects it.
+    token = jwt.encode(_base_claims(), "not-a-real-secret", algorithm="HS256")
     with pytest.raises(AuthError):
         client.validate(token)
 
