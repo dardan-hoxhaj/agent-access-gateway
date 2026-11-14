@@ -1,0 +1,9 @@
+title = "agent-access-gateway allowlist"
+
+# Historical demo placeholder that looks like a bearer token but is not a secret.
+# The current demo uses "clearly-invalid". This allowlist covers the old string
+# so a full-history scan does not fail on a known false positive.
+[[allowlists]]
+description = "demo placeholder token, not a credential"
+regexes = ['''not-a-real-token''']
+paths = ['''scripts/demo.sh''']

@@ -27,4 +27,5 @@ curl -sS -w "\nHTTP %{http_code}\n" -H "Authorization: Bearer ${TOKEN}" "${GW}/t
 
 echo
 echo "=== 3. Invalid token ==="
-curl -sS -w "\nHTTP %{http_code}\n" -H "Authorization: Bearer not-a-real-token" "${GW}/tools/tickets"
+# Intentionally not a JWT. The string is a placeholder, not a credential.
+curl -sS -w "\nHTTP %{http_code}\n" -H "Authorization: Bearer clearly-invalid" "${GW}/tools/tickets"

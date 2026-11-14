@@ -7,7 +7,7 @@ down:
 	docker compose down -v
 
 test:
-	pytest -q --cov=gateway --cov-report=term-missing
+	PYTHONPATH=. pytest -q --cov=gateway --cov-report=term-missing
 	opa test policies/ -v
 
 lint:
