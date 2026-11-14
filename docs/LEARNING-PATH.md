@@ -17,3 +17,20 @@ Do these in order. After each step, you should be able to say why that piece exi
 7. **CI and Terraform.** Add the GitHub Actions workflow (ruff, pytest, opa test, docker build, Trivy, gitleaks, terraform fmt/validate). Write the ECR + OIDC module. Run `terraform fmt -check` and `terraform validate`. Do not apply.
 
 8. **Docs.** Update the README so every command is one you actually ran. Note what you did not verify.
+
+## ISSUER vs KEYCLOAK_URL
+
+The first demo returned 401 on every call. The cause was an issuer mismatch.
+
+Keycloak sets the token `iss` claim from the URL the client used. The demo script talks to `http://localhost:8080`, so the token carries `iss=http://localhost:8080/realms/agent-gateway`.
+
+The gateway runs inside Docker. It fetches JWKS from the service name `http://keycloak:8080` (KEYCLOAK_URL), because `localhost` inside the container is the container itself, not the host.
+
+Those two URLs are different hosts for the same Keycloak. If the gateway also uses KEYCLOAK_URL as the expected issuer, signature and audience can be fine and the token still fails the issuer check.
+
+The fix is two env vars:
+
+- `KEYCLOAK_URL` is the URL the gateway uses to fetch JWKS (internal, `http://keycloak:8080`).
+- `ISSUER` is the issuer the client saw (`http://localhost:8080/realms/agent-gateway`).
+
+Keep them separate. Changing one without the other brings the 401s back.
