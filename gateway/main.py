@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import logging
 import os
+import sys
 import uuid
 from typing import Any
 
@@ -15,6 +17,31 @@ from gateway.opa import OPAClient, OPAError
 from gateway import tools
 
 app = FastAPI(title="agent-access-gateway", version="0.1.0")
+
+
+def _configure_audit_logger() -> None:
+    """Uvicorn leaves third-party loggers at WARNING. Force INFO to stdout.
+
+    The handler rebinds to the current sys.stdout on each emit so pytest's
+    capture (and capsys) sees the line, and uvicorn still prints it.
+    """
+    log = logging.getLogger("gateway.audit")
+    log.setLevel(logging.INFO)
+
+    class _StdoutHandler(logging.StreamHandler):
+        def emit(self, record: logging.LogRecord) -> None:
+            self.stream = sys.stdout
+            super().emit(record)
+
+    if not any(isinstance(h, _StdoutHandler) for h in log.handlers):
+        handler = _StdoutHandler()
+        handler.setLevel(logging.INFO)
+        handler.setFormatter(logging.Formatter("%(message)s"))
+        log.addHandler(handler)
+    log.propagate = False
+
+
+_configure_audit_logger()
 
 KEYCLOAK_URL = os.environ.get("KEYCLOAK_URL", "http://localhost:8080")
 REALM = os.environ.get("REALM", "agent-gateway")
