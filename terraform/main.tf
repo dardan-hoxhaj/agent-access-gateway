@@ -1,5 +1,5 @@
 # Minimal AWS sketch: ECR repository plus a GitHub OIDC role that can push to it.
-# This is validate-only. It is not applied.
+# Validate/plan only in CI; not applied.
 
 terraform {
   required_version = ">= 1.5.0"

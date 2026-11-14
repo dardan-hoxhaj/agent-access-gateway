@@ -26,7 +26,7 @@ Every allow and deny writes one JSON line to stdout. The token and any Authoriza
 
 ## Terraform
 
-The module creates an ECR repository and a GitHub OIDC role that can push to it. It is written so `terraform validate` passes. It is not applied. Applying it would create real AWS resources.
+The module creates an ECR repository and a GitHub OIDC role that can push to it. It is validate/plan only in CI; not applied. Applying it would create real AWS resources.
 
 ## What was cut
 

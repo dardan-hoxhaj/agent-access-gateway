@@ -1,5 +1,7 @@
 # agent-access-gateway
 
+[![ci](https://github.com/dardan-hoxhaj/agent-access-gateway/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/dardan-hoxhaj/agent-access-gateway/actions/workflows/ci.yml?query=branch%3Amain)
+
 Local identity and access gateway for AI agents. Each agent is a Keycloak client using the OAuth2 client-credentials grant. The gateway validates the short-lived JWT, asks OPA for a per-agent / per-tool / per-action decision, and writes a structured audit log. Downstream tools are mocks.
 
 ## What this does
