@@ -10,7 +10,7 @@ Each agent is its own Keycloak client. The gateway uses the `azp` (authorized pa
 
 ## Authorization: OPA, deny by default
 
-Policies live in Rego. `default allow = false`. A grant exists only when `data.agents[agent][tool][action] == true`.
+Policies live in Rego (`import rego.v1` syntax, so they load on OPA 0.68 and OPA 1.x). `default allow := false`. A grant exists only when `data.agents[agent][tool][action] == true`.
 
 **Why OPA instead of Cedar:** OPA is widely used in cloud-native and Kubernetes environments, and `opa test` is a first-class unit-test story. Cedar is strong; the testing and local-run story for OPA was the deciding factor for this project.
 
@@ -26,7 +26,7 @@ Every allow and deny writes one JSON line to stdout. The token and any Authoriza
 
 ## Terraform
 
-The module creates an ECR repository and a GitHub OIDC role that can push to it. It is validate/plan only in CI; not applied. Applying it would create real AWS resources.
+The module creates an ECR repository and a GitHub OIDC role that can push to it. CI runs `terraform fmt -check` and `terraform validate` only; it has not been applied. Applying it would create real AWS resources. The role trusts the account's existing GitHub OIDC provider (`token.actions.githubusercontent.com`); the module does not create that provider.
 
 ## What was cut
 

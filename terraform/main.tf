@@ -1,5 +1,7 @@
 # Minimal AWS sketch: ECR repository plus a GitHub OIDC role that can push to it.
-# Validate/plan only in CI; not applied.
+# CI runs fmt -check, init -backend=false, and validate only; this is not applied.
+# The role trusts the account's existing token.actions.githubusercontent.com
+# OIDC provider; this module does not create it.
 
 terraform {
   required_version = ">= 1.5.0"

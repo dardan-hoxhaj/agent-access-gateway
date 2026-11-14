@@ -2,7 +2,7 @@
 
 Do these in order. After each step, you should be able to say why that piece exists.
 
-1. **Policy first.** Write `policies/agent.rego` with `default allow = false` and one `allow` rule that reads `data.agents`. Write `policies/data.json` with two agents. Run `opa test policies/`. You should see the allow and deny cases pass. If you cannot explain why a missing action is a deny, stop and re-read the rule.
+1. **Policy first.** Write `policies/agent.rego` with `import rego.v1`, `default allow := false`, and one `allow if { ... }` rule that reads `data.agents`. Write `policies/data.json` with two agents. Run `opa test policies/`. You should see the allow and deny cases pass. If you cannot explain why a missing action is a deny, stop and re-read the rule.
 
 2. **JWT validation.** Generate a local RSA key. Write `gateway/auth.py` that loads JWKS, pins `RS256`, and checks `iss`, `aud`, and `exp`. Write `tests/test_auth.py` that signs tokens with the local key and covers expired, wrong issuer, wrong audience, and bad algorithm. Run `pytest tests/test_auth.py`.
 

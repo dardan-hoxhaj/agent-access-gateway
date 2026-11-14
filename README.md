@@ -52,7 +52,7 @@ pip install -r requirements.txt
 make test
 ```
 
-`opa` must be on PATH for the policy tests. Install from https://www.openpolicyagent.org/docs/latest/#running-opa
+`opa` must be on PATH for the policy tests. Install from https://www.openpolicyagent.org/docs/latest/#running-opa. CI and Docker Compose pin OPA 0.68.0; the policies also pass `opa test` on OPA 1.x.
 
 ## Demo cases
 
