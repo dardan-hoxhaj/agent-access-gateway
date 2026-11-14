@@ -111,3 +111,46 @@ def test_missing_bearer(client):
 
 def test_health(client):
     assert client.get("/health").status_code == 200
+
+
+def test_audit_line_has_fields_and_no_token(client, capsys):
+    import json
+
+    token = _token("ticket-agent")
+    with patch.object(OPAClient, "allow", return_value=True):
+        resp = client.get("/tools/tickets", headers={"Authorization": f"Bearer {token}"})
+    assert resp.status_code == 200
+    captured = capsys.readouterr().out
+    lines = [ln for ln in captured.splitlines() if ln.startswith("{") and '"decision"' in ln]
+    assert len(lines) == 1
+    body = json.loads(lines[0])
+    assert set(body) >= {"decision", "agent_id", "tool", "action", "reason", "request_id"}
+    assert body["decision"] == "allow"
+    assert body["agent_id"] == "ticket-agent"
+    assert body["tool"] == "tickets"
+    assert body["action"] == "read"
+    assert token not in lines[0]
+    assert "Authorization" not in lines[0]
+    assert "Bearer" not in lines[0]
+
+
+def test_unknown_route(client):
+    with patch.object(OPAClient, "allow", return_value=True):
+        resp = client.get("/tools/unknown", headers={"Authorization": f"Bearer {_token('ticket-agent')}"})
+    assert resp.status_code == 404
+
+
+def test_billing_read(client):
+    with patch.object(OPAClient, "allow", return_value=True):
+        resp = client.get("/tools/billing", headers={"Authorization": f"Bearer {_token('billing-agent')}"})
+    assert resp.status_code == 200
+    assert resp.json()["result"]["tool"] == "billing"
+
+
+def test_jwks_fetch_failure(client):
+    from gateway.auth import AuthError
+
+    with patch.object(JWKSClient, "validate", side_effect=AuthError("jwks_unavailable")):
+        resp = client.get("/tools/tickets", headers={"Authorization": f"Bearer {_token('ticket-agent')}"})
+    assert resp.status_code == 401
+    assert resp.json()["detail"] == "jwks_unavailable"
